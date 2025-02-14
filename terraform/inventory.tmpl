@@ -1,0 +1,32 @@
+all:
+  vars:
+    ansible_connection: ssh
+    ansible_user: ubuntu
+    ansible_become: true
+    ansible_ssh_private_key_file: '../terraform/cert.pem'
+
+zookeeper:
+  hosts:
+  %{ for ip in zk_hosts_ansible ~}
+  ${ip}:
+  %{ endfor ~}
+
+kafka_broker:
+  hosts:
+    ## By default the first host will get broker id=1, second gets id=2. Set broker_id to customize
+  %{ for ip in kafka_hosts_ansible ~}
+  ${ip}:
+  %{ endfor ~}
+  # broker_id: 1
+
+kafka_connect:
+  hosts:
+  %{ for ip in kafka_connect_hosts_ansible ~}
+  ${ip}:
+  %{ endfor ~}
+
+akhq:
+  hosts:
+  %{ for ip in akhq_hosts_ansible ~}
+  ${ip}:
+  %{ endfor ~}  

@@ -1,0 +1,73 @@
+#Installing Standalone AKHQ 
+- name: Add open JDK repo
+  apt_repository:
+    repo: "{{ubuntu_java_repository}}"
+
+- name: Install Java
+  apt:
+    name: "{{jdk_version}}"
+    update_cache: yes
+
+- name: Create a kafka installation directory
+  file:
+    path: "{{kafka_dir}}"
+    state: directory
+    mode: 0755
+    recurse: yes  
+
+- name: Create an installation directory
+  file:
+    path: "{{installation_dir}}"
+    state: directory
+    mode: 0755
+    recurse: yes      
+
+- name: Download AKHQ jar from site
+  get_url:
+    url: "{{akhq_url}}"
+    dest: "{{installation_dir}}"
+    mode: 0755
+
+#Create a yaml that has AKHQ configs
+- name: Create a yaml that has AKHQ configs
+  template:
+    src: "akhq_config.j2" 
+    dest: "{{installation_dir}}/akhq_config.yml"
+    #FIXME
+    mode: 0777
+
+#Create a script for AKHQ
+- name: Create AKHQ script file
+  copy:
+    content: |
+      #!/bin/bash
+      /usr/bin/java -Dmicronaut.config.files={{installation_dir}}/akhq_config.yml -jar {{installation_dir}}/akhq-0.24.0-all.jar
+    dest: "{{installation_dir}}/akhq.sh"
+    mode: 0755
+
+#Create a Service for AKHQ
+- name: Create a Service file for AKHQ 
+  copy:
+    dest: /etc/systemd/system/akhq.service
+    content: |
+      [Unit]
+      Description=AKHQ Service port 8080
+      After=network.target
+      [Service]
+      ExecStart=/bin/bash {{installation_dir}}/akhq.sh
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target
+    mode: 0755
+
+- name: Systemctl daemon-reload after creation
+  shell: systemctl daemon-reload
+
+#Start AKHQ Service 
+- name: Start AKHQ
+  tags: startakhq
+  systemd:
+      name: akhq
+      state: started
+      daemon_reload: true
+      enabled: yes

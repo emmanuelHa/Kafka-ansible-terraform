@@ -1,0 +1,17 @@
+# Fichier : zookeeper.service
+## NOT USED !!
+[Unit]
+Description=Apache ZooKeeper
+Documentation=http://zookeeper.apache.org
+After=network.target
+
+[Service]
+Type=simple
+User=kafka
+Environment="LOG_DIR=/var/log/zookeeper"
+ExecStart={{installation_dir}}/bin/zookeeper-server-start.sh {{installation_dir}}/config/zookeeper.properties
+ExecStop={{installation_dir}}/bin/zookeeper-server-stop.sh
+Restart=on-abnormal
+
+[Install]
+WantedBy=default.target

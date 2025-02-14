@@ -1,0 +1,24 @@
+akhq:
+  connections:
+    kafka-cluster:
+      properties:
+        bootstrap.servers: {% for host in groups['kafka_broker'] %}{% if loop.index > 1%},{% endif %}{{ host }}:{{kafka_port}}{% endfor %}  
+        security.protocol: PLAINTEXT
+      connect:
+        - name: "connect-1"
+          url: "http://{{ groups['kafka_connect'][0]}}:{{connect_port}}"  
+
+  topic:
+    retention: 604800000 
+micronaut:
+  security:
+    enabled: false
+akhq.security.default-group: admin
+akhq.security:
+  basic-auth:
+    - username: admin
+      password: ""
+      groups:
+      - admin
+    - username: reader
+      password: ""

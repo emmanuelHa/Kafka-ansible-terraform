@@ -1,0 +1,9 @@
+installation_dir: /etc/akhq
+kafka_dir: /opt/kafka
+akhq_version: 0.24.0
+jdk_version: openjdk-11-jdk
+kafka_port: 9092
+connect_port: 8083
+akhq_url: https://github.com/tchiotludo/akhq/releases/download/{{akhq_version}}/akhq-{{akhq_version}}-all.jar
+ubuntu_java_package_name: openjdk-8-jdk
+ubuntu_java_repository: ppa:openjdk-r/ppa

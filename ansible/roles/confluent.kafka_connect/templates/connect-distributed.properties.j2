@@ -1,0 +1,38 @@
+# Maintained by Ansible
+
+{% for key, value in kafka_connect.properties.items() %}
+{{key}}={{value}}
+{% endfor %}
+
+# Kafka Connect Configuration
+listeners={{kafka_connect_http_protocol}}://0.0.0.0:{{kafka_connect_rest_port}}
+rest.advertised.listener={{kafka_connect_http_protocol}}
+rest.advertised.host.name={{inventory_hostname}}
+rest.advertised.host.port={{kafka_connect_rest_port}}
+
+# Kafka Broker Configuration
+bootstrap.servers={% for host in groups['kafka_broker'] %}{% if loop.index > 1%},{% endif %}{{ host }}:{{kafka_port}}{% endfor %}
+
+security.protocol={{kafka_broker_security_protocol}}
+
+
+# Connect Producer Configuration
+producer.bootstrap.servers={% for host in groups['kafka_broker'] %}{% if loop.index > 1%},{% endif %}{{ host }}:{{kafka_port}}{% endfor %}
+
+producer.security.protocol={{kafka_broker_security_protocol}}
+
+
+# Connect Consumer Configuration
+consumer.bootstrap.servers={% for host in groups['kafka_broker'] %}{% if loop.index > 1%},{% endif %}{{ host }}:{{kafka_port}}{% endfor %}
+
+consumer.security.protocol={{kafka_broker_security_protocol}}
+
+# Producer Monitoring Configuration
+producer.confluent.monitoring.interceptor.bootstrap.servers={% for host in groups['kafka_broker'] %}{% if loop.index > 1%},{% endif %}{{ host }}:{{kafka_port}}{% endfor %}
+
+producer.confluent.monitoring.interceptor.security.protocol={{kafka_broker_security_protocol}}
+
+# Consumer Monitoring Configuration
+consumer.confluent.monitoring.interceptor.bootstrap.servers={% for host in groups['kafka_broker'] %}{% if loop.index > 1%},{% endif %}{{ host }}:{{kafka_port}}{% endfor %}
+
+consumer.confluent.monitoring.interceptor.security.protocol={{kafka_broker_security_protocol}}
